@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Shababy 💖</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary-red: #ff4d4d;
+            --dark-red: #800000;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-glow: 0 0 10px rgba(255, 77, 77, 0.8), 0 0 20px rgba(255, 77, 77, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        /* Background Image with Dark Tinted Overlay */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('by.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Dark tint */
+            z-index: -1;
+        }
+
+        /* Main Content Centering */
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Glassmorphism Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease-in-out;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Typography & Effects */
+        .message-text {
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-shadow: var(--text-glow);
+        }
+
+        .date-section {
+            font-size: 0.85rem;
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Typewriter Cursor */
+        #typewriter::after {
+            content: "|";
+            animation: blink 0.7s infinite;
+            color: var(--primary-red);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Floating Hearts Container */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            color: var(--primary-red);
+            font-size: 20px;
+            opacity: 0.7;
+            animation: floatUp linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Controls */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+
+        .audio-control:hover {
+            background: var(--primary-red);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 490px) {
+            .card { padding: 30px 20px; }
+            .message-text { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-container"></div>
+    <div class="overlay"></div>
+    <div class="hearts-container" id="hearts-container"></div>
+
+    <div class="wrapper">
+        <div class="card" id="card">
+            <div class="date-section" id="current-date"></div>
+            <div id="typewriter" class="message-text"></div>
+        </div>
+    </div>
+
+    <!-- Background Music (Muted by default to follow browser policies) -->
+    <audio id="bg-music" loop>
+        <!-- You can replace this with any hosted mp3 link -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <button class="audio-control" onclick="toggleMusic()" title="Play/Pause Music">
+        <span id="music-icon">🎵</span>
+    </button>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        const message = `Hey Rahma 💖
+You have this beautiful way of making me smile without even trying.
+Every time you text me, my day gets brighter and lighter.
+Your humor, your vibe, and just you being you always put me in a good mood.
+I just wanted to remind you today that you’re special to me in your own unique way.
+Happy Valentine’s Day, Shababy.
+Love you ❤️`;
+
+        const typewriterElement = document.getElementById('typewriter');
+        const card = document.getElementById('card');
+        const dateElement = document.getElementById('current-date');
+        const audio = document.getElementById('bg-music');
+        const musicIcon = document.getElementById('music-icon');
+
+        let charIndex = 0;
+
+        // 1. Display Today's Date
+        function displayDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.innerText = new Date().toLocaleDateString(undefined, options);
+        }
+
+        // 2. Typewriter Effect
+        function typeWriter() {
+            if (charIndex < message.length) {
+                const char = message.charAt(charIndex);
+                // Handle line breaks
+                if (char === '\n') {
+                    typewriterElement.innerHTML += '<br>';
+                } else {
+                    typewriterElement.innerHTML += char;
+                }
+                charIndex++;
+                setTimeout(typeWriter, 50); // Speed of typing
+            } else {
+                // Show card styling after animation finishes
+                card.classList.add('show');
+                // Remove the cursor
+                typewriterElement.style.borderRight = "none";
+            }
+        }
+
+        // 3. Floating Hearts Generator
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's'; // 3-6 seconds
+            heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            
+            document.getElementById('hearts-container').appendChild(heart);
+
+            // Remove heart after animation
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+
+        // 4. Music Toggle
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                musicIcon.innerText = '⏸️';
+            } else {
+                audio.pause();
+                musicIcon.innerText = '🎵';
+            }
+        }
+
+        // Start Everything
+        window.onload = () => {
+            displayDate();
+            setTimeout(() => {
+                card.classList.add('show'); // Fade card in slightly early or with text
+                typeWriter();
+            }, 500);
+            
+            // Generate hearts continuously
+            setInterval(createHeart, 400);
+        };
+    </script>
+</body>
+</html>
